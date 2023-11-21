@@ -12,6 +12,8 @@ public:
 
     static auto deleteDatabase(const std::string &name) -> void;
 
+    static auto createTable(const std::vector<std::string> &tokens) -> void;
 
+    static auto insertInto(const std::vector<std::string> &tokens) -> void;
 };
 

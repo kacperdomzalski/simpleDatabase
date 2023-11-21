@@ -13,10 +13,12 @@ FetchContent_Declare(
 
 FetchContent_MakeAvailable(fmt)
 
-add_executable(simpleDatabase main.cpp
-        database.cpp
-        queryParser.cpp
-        instructions.h
-        instructions.cpp
+add_executable(simpleDatabase src/main.cpp
+        src/database.cpp
+        src/queryParser.cpp
+        src/instructions.h
+        src/instructions.cpp
+        src/table.h
+        src/table.cpp
 )
 target_link_libraries(simpleDatabase fmt)

@@ -5,17 +5,10 @@
 #include "queryParser.h"
 #include "database.h"
 #include "instructions.h"
-
-#include <sstream>
-#include <vector>
-#include <string>
-#include <fmt/ranges.h>
-#include <fmt/core.h>
-#include <ranges>
-#include <algorithm>
+#include "table.h"
 
 
-auto splitCommands(const std::string &commands) {
+auto QueryParser::splitCommands(const std::string &commands) {
     auto commandLine = std::istringstream(commands);
     auto command = std::string();
     auto vectorOfCommands = std::vector<std::vector<std::string>>();
@@ -34,6 +27,18 @@ auto splitCommands(const std::string &commands) {
     }
     fmt::println("{}", vectorOfCommands);
     return vectorOfCommands;
+}
+
+
+auto cleanToken(const std::string &token) -> std::string {
+    auto cleanedToken = std::string();
+
+    for (auto c: token) {
+        if (std::isalnum(c)) {
+            cleanedToken += c;
+        }
+    }
+    return cleanedToken;
 }
 
 
@@ -58,34 +63,26 @@ auto QueryParser::parseAndExecute(const std::string &query) -> void {
                         Database::deleteDatabase(databaseName);
                     }
                     break;
+                case Option::CREATE_TABLE:
+                    Database::createTable(tokens);
+                    break;
+                case Option::INSERT:
+                    Database::insertInto(tokens);
+                    break;
+
                 default:
                     fmt::print("Invalid or unimplemented command {}\n", fmt::join(tokens, " "));
                     break;
             }
         } else {
             fmt::print("Invalid command {}\n", fmt::join(tokens, " "));
+            return;
         }
     }
 
-//    for (const auto &tokens: commandToTokens) {
-//
-//        if (tokens.size() == 4 and tokens[0] == "CREATE" and tokens[1] == "DATABASE") {
-//            auto databaseName = tokens[2];
-//            auto databasePath = tokens[3];
-//
-//            Database::createDatabase(databaseName, databasePath);
-//
-//
-//        } else if (tokens.size() == 3 and tokens[0] == "DELETE" and tokens[1] == "DATABASE") {
-//            auto databaseName = tokens[2];
-//
-//            Database::deleteDatabase(databaseName);
-//
-//        } else {
-//            fmt::print("Invalid command {}\n", fmt::join(tokens, " "));
-//        }
-//    }
 }
+
+
 
 
 

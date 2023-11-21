@@ -23,6 +23,7 @@ class Instructions {
 public:
     static std::optional<Option> getOptionFromTokens(const std::vector<std::string> &tokens);
 
+
     Instructions() = default;
 
 };

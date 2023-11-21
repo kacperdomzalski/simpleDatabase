@@ -4,24 +4,23 @@
 
 #include <string>
 #include "instructions.h"
-#include <fmt/core.h>
+#include "fmt/core.h"
 
 
 std::optional<Option> Instructions::getOptionFromTokens(const std::vector<std::string> &tokens) {
 
     std::string command;
-
     auto it = tokens.begin();
     // Compare the command string to known commands
     if (*it == "CREATE" and *(it + 1) == "DATABASE") {
         return Option::CREATE_DATABASE;
     } else if (command == "delete database") {
         return Option::DELETE_DATABASE;
-    } else if (command == "create table") {
+    } else if (*it == "CREATE" and *(it + 1) == "TABLE") {
         return Option::CREATE_TABLE;
     } else if (command == "delete table") {
         return Option::DELETE_TABLE;
-    } else if (command == "insert") {
+    } else if (*it == "INSERT" and *(it + 1) == "INTO") {
         return Option::INSERT;
     } else if (command == "select") {
         return Option::SELECT;
@@ -35,3 +34,7 @@ std::optional<Option> Instructions::getOptionFromTokens(const std::vector<std::s
     // If no valid command is matched, return an invalid option
     return std::nullopt;
 }
+
+
+
+

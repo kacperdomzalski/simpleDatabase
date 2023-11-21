@@ -1,7 +1,6 @@
 #include <iostream>
 
 #include "queryParser.h"
-#include "database.h"
 
 auto main() -> int {
 
