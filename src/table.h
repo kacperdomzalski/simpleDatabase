@@ -15,13 +15,26 @@
 #include <fstream>
 #include "fmt/std.h"
 
+enum class DataType {
+    INT,
+    STRING,
+    FLOAT,
+    INVALID
+};
 
 struct Table {
-    std::string name;
-    std::string typeName;
+//    std::string name;
+//    std::string typeName;
 
     static auto processCreateTable(const std::vector<std::string> &tokens) -> void;
 
     static auto processInsert(const std::vector<std::string> &tokens) -> void;
 
+    static auto typesFromUserInput(const std::vector<std::string> &tokens) -> std::vector<std::string>;
+
+    static auto typesFromTable(const std::vector<std::string> &tokens) -> std::vector<std::string>;
+
+    static auto stringToDataType(const std::string &typeStr) -> DataType;
+
+    static auto isValidTypeAndValue(const std::vector<std::string> &tokens) -> bool;
 };
