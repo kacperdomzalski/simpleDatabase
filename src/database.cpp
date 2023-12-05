@@ -5,16 +5,17 @@
 #include "database.h"
 #include "table.h"
 #include "fmt/core.h"
+#include "config.h"
 
 
-auto Database::createDatabase(const std::string &name, const std::filesystem::path &path) -> void {
+auto Database::createDatabase(const std::string &name) -> void {
 
-    auto dbPath = path / name;
-    if (std::filesystem::exists(dbPath)) {
+
+    if (std::filesystem::exists(BASE_PATH + name)) {
         fmt::print("Database {} already exists\n", name);
     } else {
         fmt::print("Creating database {}\n", name);
-        std::filesystem::create_directory(dbPath);
+        std::filesystem::create_directory(BASE_PATH + name);
     }
 
 }
@@ -22,9 +23,9 @@ auto Database::createDatabase(const std::string &name, const std::filesystem::pa
 
 auto Database::deleteDatabase(const std::string &name) -> void {
 
-    if (std::filesystem::exists(name)) {
+    if (std::filesystem::exists(BASE_PATH + name)) {
         fmt::print("Deleting database {}\n", name);
-        std::filesystem::remove_all(name);
+        std::filesystem::remove_all(BASE_PATH + name);
     } else {
         fmt::print("Database {} does not exist\n", name);
     }
@@ -33,8 +34,8 @@ auto Database::deleteDatabase(const std::string &name) -> void {
 auto Database::createTable(const std::vector<std::string> &tokens) -> void {
 
     // Check if the directory exists
-    if (!std::filesystem::exists(tokens[3])) {
-        fmt::println("Database doesn't exist {}: ", tokens[3]);
+    if (!std::filesystem::exists(BASE_PATH + tokens[2])) {
+        fmt::println("Database {} doesn't exist", tokens[2]);
         return;
     } else {
         Table::processCreateTable(tokens);

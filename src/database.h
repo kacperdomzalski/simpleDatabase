@@ -8,7 +8,8 @@
 
 class Database {
 public:
-    static auto createDatabase(const std::string &name, const std::filesystem::path &path) -> void;
+
+    static auto createDatabase(const std::string &name) -> void;
 
     static auto deleteDatabase(const std::string &name) -> void;
 

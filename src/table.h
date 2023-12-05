@@ -23,8 +23,6 @@ enum class DataType {
 };
 
 struct Table {
-//    std::string name;
-//    std::string typeName;
 
     static auto processCreateTable(const std::vector<std::string> &tokens) -> void;
 

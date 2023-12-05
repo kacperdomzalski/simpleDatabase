@@ -15,7 +15,8 @@ enum class Option {
     SELECT,
     UPDATE,
     DELETE,
-    EXIT
+    EXIT,
+    EXECUTE
 };
 
 

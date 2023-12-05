@@ -11,10 +11,17 @@
 #include "fmt/ranges.h"
 #include "fmt/core.h"
 #include <algorithm>
+#include <queue>
+#include "fmt/format.h"
 
 struct QueryParser {
+    static auto parseAndExecute(const std::string &query) -> void;
+
     static auto splitCommands(const std::string &commands);
 
-    static auto parseAndExecute(const std::string &query) -> void;
+private:
+//    static std::queue<std::vector<std::string>> commandQueue;
+    inline static auto commandQueue = std::queue<std::vector<std::string>>{};
+
 };
 

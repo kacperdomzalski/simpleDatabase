@@ -20,5 +20,6 @@ add_executable(simpleDatabase src/main.cpp
         src/instructions.cpp
         src/table.h
         src/table.cpp
+        src/config.h
 )
 target_link_libraries(simpleDatabase fmt)

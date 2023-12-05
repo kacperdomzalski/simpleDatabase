@@ -14,7 +14,7 @@ std::optional<Option> Instructions::getOptionFromTokens(const std::vector<std::s
     // Compare the command string to known commands
     if (*it == "CREATE" and *(it + 1) == "DATABASE") {
         return Option::CREATE_DATABASE;
-    } else if (command == "delete database") {
+    } else if (*it == "DELETE" and *(it + 1) == "DATABASE") {
         return Option::DELETE_DATABASE;
     } else if (*it == "CREATE" and *(it + 1) == "TABLE") {
         return Option::CREATE_TABLE;
@@ -30,11 +30,11 @@ std::optional<Option> Instructions::getOptionFromTokens(const std::vector<std::s
         return Option::DELETE;
     } else if (command == "exit") {
         return Option::EXIT;
+    } else if (*it == "EXECUTE") {
+        return Option::EXECUTE;
+        // If no valid command is matched, return an invalid option
+        return std::nullopt;
     }
-    // If no valid command is matched, return an invalid option
-    return std::nullopt;
+
+
 }
-
-
-
-

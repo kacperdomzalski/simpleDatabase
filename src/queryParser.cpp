@@ -22,68 +22,59 @@ auto QueryParser::splitCommands(const std::string &commands) {
                     std::istream_iterator<std::string>()// end of stream iterator
             };
 
-            vectorOfCommands.push_back(std::move(tokens)); // move tokens to vectorOfCommands
+            vectorOfCommands.push_back(tokens); // move tokens to vectorOfCommands
+
         }
+
     }
-    fmt::println("{}", vectorOfCommands);
+    fmt::println("Command VEC: {} ", vectorOfCommands);
     return vectorOfCommands;
-}
-
-
-auto cleanToken(const std::string &token) -> std::string {
-    auto cleanedToken = std::string();
-
-    for (auto c: token) {
-        if (std::isalnum(c)) {
-            cleanedToken += c;
-        }
-    }
-    return cleanedToken;
 }
 
 
 auto QueryParser::parseAndExecute(const std::string &query) -> void {
     auto commandToTokens = splitCommands(query);
 
+
     for (const auto &tokens: commandToTokens) {
-        auto option = Instructions::getOptionFromTokens(tokens);
+        commandQueue.push(tokens);
+        fmt::println("QUEUE: {} ", commandQueue);
 
-        if (option.has_value()) {
-            switch (option.value()) {
-                case Option::CREATE_DATABASE:
-                    if (tokens.size() == 4) {
-                        auto databaseName = tokens[2];
-                        auto databasePath = tokens[3];
-                        Database::createDatabase(databaseName, databasePath);
-                    }
-                    break;
-                case Option::DELETE_DATABASE:
-                    if (tokens.size() == 3) {
-                        auto databaseName = tokens[2];
-                        Database::deleteDatabase(databaseName);
-                    }
-                    break;
-                case Option::CREATE_TABLE:
-                    Database::createTable(tokens);
-                    break;
-                case Option::INSERT:
-                    Database::insertInto(tokens);
-                    break;
-
-                default:
-                    fmt::print("Invalid or unimplemented command {}\n", fmt::join(tokens, " "));
-                    break;
-            }
-        } else {
-            fmt::print("Invalid command {}\n", fmt::join(tokens, " "));
-            return;
-        }
     }
 
+    while (commandQueue.back()[0] == "EXECUTE" and commandQueue.back().size() == 1) {
+        auto tokens = commandQueue.front();
+        auto option = Instructions::getOptionFromTokens(tokens);
+        commandQueue.pop();
+
+        switch (option.value()) {
+            case Option::CREATE_DATABASE:
+                if (tokens.size() == 3) {
+                    auto databaseName = tokens[2];
+                    Database::createDatabase(databaseName);
+                }
+                break;
+            case Option::DELETE_DATABASE:
+                if (tokens.size() == 3) {
+                    auto databasePath = tokens[2];
+                    Database::deleteDatabase(databasePath);
+                }
+                break;
+            case Option::CREATE_TABLE:
+                Database::createTable(tokens);
+                break;
+            case Option::INSERT:
+                Database::insertInto(tokens);
+                break;
+            case Option::EXECUTE:
+                fmt::println("Executing commands");
+                break;
+
+            default:
+                fmt::print("Invalid or unimplemented command {}\n", fmt::join(tokens, " "));
+                break;
+        }
+    }
 }
-
-
-
-
 
 

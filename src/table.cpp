@@ -3,8 +3,7 @@
 //
 
 #include "table.h"
-
-//auto format(Table &c) { return std::pair<std::string, std::string>(c.name, c.typeName); };
+#include "config.h"
 
 auto isValidType(const std::string &typeStr) -> bool {
     return Table::stringToDataType(typeStr) != DataType::INVALID;
@@ -13,13 +12,29 @@ auto isValidType(const std::string &typeStr) -> bool {
 auto isInteger(const std::string &s) -> bool {
     return !s.empty() and std::ranges::all_of(s, [](char c) { return std::isdigit(c); });
 }
-// HOW TO CHECK IF STRING IS FLOAT
+
+auto isFloat(const std::string &s) -> bool {
+    auto dotCount = std::ranges::count(s, '.');
+    auto dotIndex = std::ranges::find(s, '.');
+
+    auto beforeDot = std::string(s.begin(), dotIndex);
+    auto afterDot = std::string(dotIndex + 1, s.end());
+
+    if (dotCount != 1) {
+        return false;
+    }
+
+    return !s.empty() and std::ranges::all_of(beforeDot, [](char c) { return std::isdigit(c); }) &&
+           std::ranges::all_of(afterDot, [](char c) { return std::isdigit(c); });
+}
+
 
 auto Table::processCreateTable(const std::vector<std::string> &tokens) -> void {
+//CREATE TABLE nazwaTabeli nazwaBD STRING imie INT wiek FLOAT pensja
 
-    auto directoryPath = std::filesystem::path(tokens[3]);
-    auto fileName = tokens[2] + ".txt";
-    auto fullPath = directoryPath / fileName;
+    auto &databaseName = tokens[2];
+    auto &tableName = tokens[3];
+    auto fullPath = std::filesystem::path(BASE_PATH + databaseName + "/" + tableName);
     auto fileContent = std::string();
 
     // Check if the file (table) already exists
@@ -38,10 +53,6 @@ auto Table::processCreateTable(const std::vector<std::string> &tokens) -> void {
         auto columnType = *it;
         auto columnName = *(it + 1);
 
-//        if (columnType == "INT" and !isInteger(columnName)) {
-//            fmt::println("Error: Column name '{}' is not a valid INT.", columnName);
-//            return;
-//        }
 
         if (!isValidType(columnType)) {
             fmt::println("Error: Invalid column type '{}'. Only STRING, INT, and FLOAT are allowed.", columnType);
@@ -49,18 +60,23 @@ auto Table::processCreateTable(const std::vector<std::string> &tokens) -> void {
         }
 
         fileContent.append(columnType).append(" ").append(columnName).append(" ");
+
     }
 
     auto file = std::fstream(fullPath, std::fstream::out | std::fstream::trunc);
     fmt::print(file, "{}\n", fileContent);
+    fmt::println("Table '{}' created correctly.", tableName);
 
 }
 
 auto Table::processInsert(const std::vector<std::string> &tokens) -> void {
 
     //INSERT INTO path_to_file.txt tableType, column2, column3, ...)
+    auto &databaseName = tokens[2];
+    auto &tableName = tokens[3];
+    auto filePath = std::filesystem::path(BASE_PATH + databaseName + "/" + tableName);
 
-    auto filePath = std::filesystem::path(tokens[2] + ".txt");
+
     auto file = std::fstream(filePath, std::fstream::app);
 
     auto typesFromUserVec = typesFromUserInput(tokens); //vector string
@@ -73,7 +89,7 @@ auto Table::processInsert(const std::vector<std::string> &tokens) -> void {
     // Check if the vectors are of the same size and have the same elements in the same order
     if (isVecSizeEqual and isVecEqual and isValidTypeAndValue(tokens)) {
 
-        for (auto it = tokens.begin() + 3; it != tokens.end(); it++) {
+        for (auto it = tokens.begin() + 4; it != tokens.end(); it++) {
 
             fmt::print(file, "{} ", *it);
         }
@@ -82,13 +98,16 @@ auto Table::processInsert(const std::vector<std::string> &tokens) -> void {
         fmt::print("The data types provided do not match the table's column types.\n");
         return;
     }
+
+    fmt::println("Data inserted correctly for database {} in table {}.", databaseName, tableName);
+    
 }
 
 auto Table::typesFromUserInput(const std::vector<std::string> &tokens) -> std::vector<std::string> {
     auto typesFromUser = std::vector<std::string>();
 
-    for (int i = 3; i < tokens.size(); ++i) {
-        if (i % 2 != 0) {
+    for (int i = 4; i < tokens.size(); ++i) {
+        if (i % 2 == 0) {
             typesFromUser.push_back(tokens[i]);
         }
     }
@@ -100,7 +119,11 @@ auto Table::typesFromUserInput(const std::vector<std::string> &tokens) -> std::v
 
 auto Table::typesFromTable(const std::vector<std::string> &tokens) -> std::vector<std::string> {
     auto typesFromTable = std::vector<std::string>();
-    auto file = std::ifstream(tokens[2] + ".txt");
+
+    auto &databaseName = tokens[2];
+    auto &tableName = tokens[3];
+
+    auto file = std::ifstream(BASE_PATH + databaseName + "/" + tableName);
     auto line = std::string();
 
     if (std::getline(file, line)) {
@@ -137,6 +160,11 @@ auto Table::isValidTypeAndValue(const std::vector<std::string> &tokens) -> bool 
 
         if (*it == "INT" and !isInteger(value)) {
             fmt::println("Error: Column name '{}' is not a valid INT.", value);
+            return false;
+        }
+
+        if (*it == "FLOAT" and !isFloat(value)) {
+            fmt::println("Error: Column name '{}' is not a valid FLOAT.", value);
             return false;
         }
 
