@@ -35,4 +35,6 @@ struct Table {
     static auto stringToDataType(const std::string &typeStr) -> DataType;
 
     static auto isValidTypeAndValue(const std::vector<std::string> &tokens) -> bool;
+
+    static auto deleteTable(const std::vector<std::string> &tokens) -> void;
 };

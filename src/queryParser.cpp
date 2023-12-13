@@ -6,6 +6,7 @@
 #include "database.h"
 #include "instructions.h"
 #include "table.h"
+#include "select.h"
 
 
 auto QueryParser::splitCommands(const std::string &commands) {
@@ -63,11 +64,17 @@ auto QueryParser::parseAndExecute(const std::string &query) -> void {
             case Option::CREATE_TABLE:
                 Database::createTable(tokens);
                 break;
+            case Option::DELETE_TABLE:
+                Table::deleteTable(tokens);
+                break;
             case Option::INSERT:
                 Database::insertInto(tokens);
                 break;
             case Option::EXECUTE:
-                fmt::println("Executing commands");
+                fmt::println("Commands was executed");
+                break;
+            case Option::SELECT:
+                Select::selectDataFromTable(tokens);
                 break;
 
             default:

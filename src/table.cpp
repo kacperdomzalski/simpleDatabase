@@ -100,7 +100,7 @@ auto Table::processInsert(const std::vector<std::string> &tokens) -> void {
     }
 
     fmt::println("Data inserted correctly for database {} in table {}.", databaseName, tableName);
-    
+
 }
 
 auto Table::typesFromUserInput(const std::vector<std::string> &tokens) -> std::vector<std::string> {
@@ -171,6 +171,20 @@ auto Table::isValidTypeAndValue(const std::vector<std::string> &tokens) -> bool 
     }
 
     return true;
+}
+
+auto Table::deleteTable(const std::vector<std::string> &tokens) -> void {
+    auto &databaseName = tokens[2];
+    auto &tableName = tokens[3];
+    auto fullPath = std::filesystem::path(BASE_PATH + databaseName + "/" + tableName);
+
+    if (std::filesystem::exists(fullPath)) {
+        std::filesystem::remove(fullPath);
+        fmt::println("Table '{}' deleted correctly.", tableName);
+    } else {
+        fmt::println("Error: Table '{}' does not exist.", tableName);
+    }
+
 }
 
 
