@@ -16,14 +16,21 @@ FetchContent_MakeAvailable(fmt)
 add_executable(simpleDatabase src/main.cpp
         src/database.cpp
         src/queryParser.cpp
-        src/instructions.h
+        src/headers/instructions.h
         src/instructions.cpp
-        src/table.h
+        src/headers/table.h
         src/table.cpp
-        src/config.h
-        src/select.h
+        src/headers/config.h
+        src/headers/select.h
         src/select.cpp
-        src/memory.h
+        src/headers/memory.h
         src/memory.cpp
+        src/headers/whereFilter.h
+        src/whereFilter.cpp
+        src/headers/update.h
+        src/update.cpp
+        src/updateSetFilter.cpp
+        src/headers/deleteRow.h
+        src/deleteRow.cpp
 )
 target_link_libraries(simpleDatabase fmt)

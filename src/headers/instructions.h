@@ -8,21 +8,22 @@
 
 enum class Option {
     CREATE_DATABASE,
-    DELETE_DATABASE,
+    DROP_DATABASE,
     CREATE_TABLE,
-    DELETE_TABLE,
-    INSERT,
+    DROP_TABLE,
+    INSERT_INTO,
     SELECT,
     UPDATE,
     DELETE,
     EXIT,
-    EXECUTE
+    EXECUTE,
+    INVALID
 };
 
 
 class Instructions {
 public:
-    static std::optional<Option> getOptionFromTokens(const std::vector<std::string> &tokens);
+    static auto getOptionFromTokens(const std::vector<std::string> &tokens) -> std::optional<Option>;
 
 
     Instructions() = default;

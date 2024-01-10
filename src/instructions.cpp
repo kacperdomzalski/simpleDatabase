@@ -3,13 +3,13 @@
 //
 
 #include <string>
-#include "instructions.h"
+#include "headers/instructions.h"
 #include "fmt/core.h"
 
 
-std::optional<Option> Instructions::getOptionFromTokens(const std::vector<std::string> &tokens) {
+auto Instructions::getOptionFromTokens(const std::vector<std::string> &tokens) -> std::optional<Option> {
 
-    std::string command;
+    auto command = std::string();
     auto it = tokens.begin();
     auto &firstCommand = *it;
     auto &secondCommand = *(it + 1);
@@ -18,27 +18,25 @@ std::optional<Option> Instructions::getOptionFromTokens(const std::vector<std::s
     // Compare the command string to known commands
     if (firstCommand == "CREATE" and secondCommand == "DATABASE") {
         return Option::CREATE_DATABASE;
-    } else if (firstCommand == "DELETE" and secondCommand == "DATABASE") {
-        return Option::DELETE_DATABASE;
+    } else if (firstCommand == "DROP" and secondCommand == "DATABASE") {
+        return Option::DROP_DATABASE;
     } else if (firstCommand == "CREATE" and secondCommand == "TABLE") {
         return Option::CREATE_TABLE;
-    } else if (firstCommand == "DELETE" and secondCommand == "TABLE") {
-        return Option::DELETE_TABLE;
+    } else if (firstCommand == "DROP" and secondCommand == "TABLE") {
+        return Option::DROP_TABLE;
     } else if (firstCommand == "INSERT" and secondCommand == "INTO") {
-        return Option::INSERT;
+        return Option::INSERT_INTO;
     } else if (firstCommand == "SELECT") {
         return Option::SELECT;
-    } else if (command == "update") {
+    } else if (firstCommand == "UPDATE") {
         return Option::UPDATE;
-    } else if (command == "delete") {
+    } else if (firstCommand == "DELETE" and secondCommand == "FROM") {
         return Option::DELETE;
     } else if (command == "exit") {
         return Option::EXIT;
     } else if (*it == "EXECUTE") {
         return Option::EXECUTE;
-        // If no valid command is matched, return an invalid option
-
     }
 
-    return std::nullopt;
+    return Option::INVALID;
 }

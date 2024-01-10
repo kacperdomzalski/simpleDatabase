@@ -2,14 +2,15 @@
 // Created by Kacper Domżalski on 13/11/2023.
 //
 
-#include "queryParser.h"
-#include "database.h"
-#include "instructions.h"
-#include "table.h"
-#include "select.h"
+#include "headers/queryParser.h"
+#include "headers/database.h"
+#include "headers/instructions.h"
+#include "headers/table.h"
+#include "headers/select.h"
+#include "headers/deleteRow.h"
 
 
-auto QueryParser::splitCommands(const std::string &commands) {
+auto QueryParser::splitCommands(const std::string &commands) -> std::vector<std::vector<std::string>> {
     auto commandLine = std::istringstream(commands);
     auto command = std::string();
     auto vectorOfCommands = std::vector<std::vector<std::string>>();
@@ -28,7 +29,6 @@ auto QueryParser::splitCommands(const std::string &commands) {
         }
 
     }
-    fmt::println("Command VEC: {} ", vectorOfCommands);
     return vectorOfCommands;
 }
 
@@ -39,7 +39,7 @@ auto QueryParser::parseAndExecute(const std::string &query) -> void {
 
     for (const auto &tokens: commandToTokens) {
         commandQueue.push(tokens);
-        fmt::println("QUEUE: {} ", commandQueue);
+//        fmt::println("QUEUE: {} ", commandQueue);
 
     }
 
@@ -50,25 +50,22 @@ auto QueryParser::parseAndExecute(const std::string &query) -> void {
 
         switch (option.value()) {
             case Option::CREATE_DATABASE:
-                if (tokens.size() == 3) {
-                    auto databaseName = tokens[2];
-                    Database::createDatabase(databaseName);
-                }
+                Database::createDatabase(tokens);
                 break;
-            case Option::DELETE_DATABASE:
-                if (tokens.size() == 3) {
-                    auto databasePath = tokens[2];
-                    Database::deleteDatabase(databasePath);
-                }
+            case Option::DROP_DATABASE:
+                Database::deleteDatabase(tokens);
                 break;
             case Option::CREATE_TABLE:
-                Database::createTable(tokens);
+                Table::createMemoryTable(tokens);
                 break;
-            case Option::DELETE_TABLE:
+            case Option::DROP_TABLE:
                 Table::deleteTable(tokens);
                 break;
-            case Option::INSERT:
-                Database::insertInto(tokens);
+            case Option::INSERT_INTO:
+                Table::insertIntoMemoryTable(tokens);
+                break;
+            case Option::UPDATE:
+                Update::processUpdate(tokens);
                 break;
             case Option::EXECUTE:
                 fmt::println("Commands was executed");
@@ -76,9 +73,12 @@ auto QueryParser::parseAndExecute(const std::string &query) -> void {
             case Option::SELECT:
                 Select::selectDataFromTable(tokens);
                 break;
+            case Option::DELETE:
+                Delete::processDelete(tokens);
+                break;
 
             default:
-                fmt::print("Invalid or unimplemented command {}\n", fmt::join(tokens, " "));
+                fmt::println("Invalid or unimplemented command: '{}'", fmt::join(tokens, " "));
                 break;
         }
     }
